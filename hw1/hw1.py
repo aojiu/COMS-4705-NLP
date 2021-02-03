@@ -12,7 +12,6 @@ import pandas as pd
 import numpy as np
 from features import preprocessing_upper_lower
 from features import preprocessing_url
-from features import preprocessing_username
 from features import strip
 from features import hashtags
 from features import get_caps
@@ -25,7 +24,6 @@ from features import user_num
 from features import char_feature
 from features import question
 from features import pos_words
-from features import len_tweet
 from sklearn import preprocessing
 import csv
 
@@ -96,24 +94,11 @@ def model_training_testing(train_data_file, test_data_file, model_name, lexicon_
         training_X = uni_train
         test_X = uni_test
         
-        training_X = np.concatenate((training_X, bi_train), axis=1)
-        test_X = np.concatenate((test_X, bi_test), axis=1)
+        training_X = np.concatenate((training_X, bi_train, hs_uni_train, hs_bi_train, uni_train_total, bi_train_total,
+         hs_uni_train_total, hs_bi_train_total), axis=1)
 
-        training_X = np.concatenate((training_X, hs_uni_train), axis=1)
-        test_X = np.concatenate((test_X, hs_uni_test), axis=1)
-        training_X = np.concatenate((training_X, hs_bi_train), axis=1)
-        test_X = np.concatenate((test_X, hs_bi_test), axis=1)
-
-        # add total score in lexicon feature
-        training_X = np.concatenate((training_X, uni_train_total), axis=1)
-        test_X = np.concatenate((test_X, uni_test_total), axis=1)
-        training_X = np.concatenate((training_X, bi_train_total), axis=1)
-        test_X = np.concatenate((test_X, bi_test_total), axis=1)
-
-        training_X = np.concatenate((training_X, hs_uni_train_total), axis=1)
-        test_X = np.concatenate((test_X, hs_uni_test_total), axis=1)
-        training_X = np.concatenate((training_X, hs_bi_train_total), axis=1)
-        test_X = np.concatenate((test_X, hs_bi_test_total), axis=1)
+        test_X = np.concatenate((test_X, bi_test, hs_uni_test, hs_bi_test, uni_test_total, bi_test_total,
+         hs_uni_test_total, hs_bi_test_total), axis=1)
         print("Lex done")
     
     if model_name =="Ngram+Lex+Enc":
@@ -125,12 +110,12 @@ def model_training_testing(train_data_file, test_data_file, model_name, lexicon_
         test_encoding = np.concatenate((test_encoding,test_caps), axis = 1)
         test_encoding = np.concatenate((test_encoding,np.array(df_test["tweet_tokens"].apply(exclaim)).reshape(df_test.shape[0],-1)), axis = 1)
 
-        train_pos, test_pos = pos_occurence(df_train, df_test)
-        training_X = np.concatenate((training_X, train_encoding), axis=1)
-        test_X = np.concatenate((test_X, test_encoding), axis=1)
+        # train_pos, test_pos = pos_occurence(df_train, df_test)
+        # training_X = np.concatenate((training_X, train_encoding), axis=1)
+        # test_X = np.concatenate((test_X, test_encoding), axis=1)
         
-        training_X = np.concatenate((training_X, train_pos), axis=1)
-        test_X = np.concatenate((test_X, test_pos), axis=1)
+        # training_X = np.concatenate((training_X, train_pos), axis=1)
+        # test_X = np.concatenate((test_X, test_pos), axis=1)
         print("Enc done")
 
 
@@ -179,45 +164,15 @@ def model_training_testing(train_data_file, test_data_file, model_name, lexicon_
 
     # # SGD
     sgd = SGDClassifier(loss="hinge",penalty="elasticnet", l1_ratio=0.05, random_state=43, max_iter=6000)
-    print("training")
+    print("training Linear SVM")
     sgd.fit(training_X, training_Y)
-    print("testing")
+    print("testing Linear SVM")
     predictions = sgd.predict(test_X)
     f1 = f1_score(test_Y, predictions, average='macro')
     class_score = f1_score(test_Y, predictions, average=None)
-    print(class_score)
-    print(f1)
-
-
-    
-    # naive bayes classifier
-    # Gaussian 
-    print("Naive Bayes training")
-    gnb = GaussianNB()
-    print("training")
-    gnb.fit(training_X,training_Y)
-    predictions_train = gnb.predict(training_X)
-    f1_train = f1_score(training_Y, predictions_train, average='macro')
-    print("training macro f1 score is {}".format(f1_train))
-    print("testing")
-    predictions = gnb.predict(test_X)
-    f1 = f1_score(test_Y, predictions, average='macro')
-    print("macro f1 score is {}".format(f1))
-
-    # naive bayes classifier
-    # Multinomial
-    training_X=np.absolute(training_X)
-    test_X=np.absolute(test_X)
-    print("Multinomial Bayes training")
-    gnb = MultinomialNB(alpha=0.1)
-    print("training")
-    gnb.fit(training_X,training_Y)
-    predictions_train = gnb.predict(training_X)
-    f1_train = f1_score(training_Y, predictions_train, average='macro')
-    print("training macro f1 score is {}".format(f1_train))
-    print("testing")
-    predictions = gnb.predict(test_X)
-    f1 = f1_score(test_Y, predictions, average='macro')
+    print("f1 score for negative is {}".format(class_score[0]))
+    print("f1 score for positive is {}".format(class_score[1]))
+    print("f1 score for neutral is {}".format(class_score[2]))
     print("macro f1 score is {}".format(f1))
 
 

@@ -18,27 +18,8 @@ def preprocessing_upper_lower(string):
     # but before ngram
     return string.lower()
 
-def len_tweet(string):
-    tknzr = TweetTokenizer()
-    token_lst = tknzr.tokenize(string)
-    return len(token_lst)
-
-def preprocessing_username(string):
-    # replace user name starting with @ with ||user||
-    return re.sub(r'@\S+', '||user||', string)
-
 def strip(string):
     return string.replace(" ", "")
-
-def vectorcount(ngram, train_data_token, test_data_token):
-    # word_ngram_1 = CountVectorizer(analyzer='word', ngram_range=(int(ngram),int(ngram)))
-    word_ngram_1 = TfidfVectorizer(sublinear_tf=True, max_df=0.6, stop_words="english", ngram_range=(int(ngram),int(ngram)))
-    train_word_ngram_feat = word_ngram_1.fit_transform(train_data_token)
-    test_word_ngram_feat = word_ngram_1.transform(test_data_token)
-    
-    train_word_ngram_feat = np.array(train_word_ngram_feat.toarray())
-    test_word_ngram_feat = np.array(test_word_ngram_feat.toarray())
-    return train_word_ngram_feat, test_word_ngram_feat
 
 ################### Ngram Features ###################
 def ngram_feature(df_train, df_test):
