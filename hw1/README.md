@@ -19,8 +19,6 @@ There are four required arguments to pass in.
 python hw1.py --train <train data> --test <test data> --model <model name> --lexicon_path <lexicon_path>
 ```
 
-For assignment1, input image is stored at ```<image_analysis dir>/assignment1/Homework1```. The output image is stored at ```<image_analysis dir>/assignment1/output```.
-
 ## hw1.py: 
 * This is the main function.
 * First, read training and test data.
