@@ -35,7 +35,7 @@ python hw2.py --model <model name>
 * There is only one extension in this file.
 * See extension2 in utils.py
 * RNN is a bidirectional RNN ```self.rnn=nn.RNN(100, 64, 2, nonlinearity="relu",bidirectional=True)```.
-* Extension is a bi-LSTM ```self.bilstm = nn.LSTM(embeddings.shape[1],64,1, bidirectional=True)```
+* Extension is a bi-LSTM with a step learning rate scheduler```self.bilstm = nn.LSTM(embeddings.shape[1],64,1, bidirectional=True)```
 
 ## utils.py: 
 * The file contains code used in preprocessing and generating embeddings.
