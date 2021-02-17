@@ -1,6 +1,8 @@
 # Homework 2: Emotion Classification with Neural Networks
 Natural Language Processing
+
 Prof Kathleen McKeown
+
 Weiyao Xie (wx2251)
 
 ## Getting Started
