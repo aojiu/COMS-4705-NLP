@@ -17,6 +17,7 @@ from sklearn.preprocessing import LabelEncoder
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from torch.utils.data import Dataset, DataLoader
 import argparse
 
@@ -40,7 +41,7 @@ FRESH_START = False  # set this to false after running once with True to just lo
 TEMP_FILE = "temporary_data.pkl"  # if you set FRESH_START to false, the program will look here for your data, etc.
 
 
-def train_model(model, loss_fn, optimizer, train_generator, dev_generator):
+def train_model(model, loss_fn, optimizer, train_generator, dev_generator, scheduler=None):
     """
     Perform the actual training of the model based on the train and dev sets.
     :param model: one of your models, to be trained to perform 4-way emotion classification
@@ -54,6 +55,7 @@ def train_model(model, loss_fn, optimizer, train_generator, dev_generator):
     # TODO: Given a model, data, and loss function, you should do the following:
     # TODO: 1) Loop through the whole train dataset performing batch optimization with the optimizer of your choice,
     running_loss=0
+    print(scheduler)
     dev_loss=2**31
     max_acc=0
     earlystop_patience=0
@@ -74,8 +76,10 @@ def train_model(model, loss_fn, optimizer, train_generator, dev_generator):
             optimizer.step()
             optimizer.zero_grad()
             running_loss += loss.item()
-
-    
+        # after each epoch
+        # update the scheduler
+        if scheduler:
+            scheduler.step()
         # do not need to update parameter
         with torch.no_grad():
             dev_loss_current=0
@@ -214,9 +218,11 @@ def main(args):
         # bidiretional LSTM
         loss_fn = nn.CrossEntropyLoss()
         model_lstm=models.ExperimentalNetwork(embeddings)
-        optimizer = optim.Adam(model_lstm.parameters(), lr=0.003)
+        optimizer = optim.Adam(model_lstm.parameters(), lr=0.008)
+        ################# extension-grading ######################
+        scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1, gamma=0.0005)
         print("Training Extension1")
-        model_lstm = train_model(model_lstm, loss_fn, optimizer, train_generator, dev_generator)
+        model_lstm = train_model(model_lstm, loss_fn, optimizer, train_generator, dev_generator,scheduler)
         print("Testing Extension1")
         test_model(model_lstm, loss_fn, test_generator)
 
