@@ -220,7 +220,7 @@ def main(args):
         model_lstm=models.ExperimentalNetwork(embeddings)
         optimizer = optim.Adam(model_lstm.parameters(), lr=0.008)
         ################# extension-grading ######################
-        scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=1, gamma=0.0005)
+        scheduler = optim.lr_scheduler.StepLR(optimizer,step_size=3, gamma=0.001)
         print("Training Extension1")
         model_lstm = train_model(model_lstm, loss_fn, optimizer, train_generator, dev_generator,scheduler)
         print("Testing Extension1")
