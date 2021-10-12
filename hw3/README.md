@@ -1,4 +1,4 @@
-# Homework 2: Adventures with word embeddings
+# Homework 3: Adventures with word embeddings
 Natural Language Processing
 
 Prof Kathleen McKeown
